@@ -1,0 +1,58 @@
+import { useState, useEffect } from 'react';
+
+export interface PricingItem {
+  id: string;
+  name: string;
+  price: string;
+}
+
+export interface DoctorItem {
+  id: string;
+  name: string;
+  role: string;
+  exp: string;
+  img: string;
+  desc: string;
+}
+
+export interface SiteData {
+  phoneRaw: string;
+  phoneDisplay: string;
+  heroImage: string;
+  pricing: PricingItem[];
+  doctors: DoctorItem[];
+}
+
+export const defaultData: SiteData = {
+  phoneRaw: '77753041999',
+  phoneDisplay: '+7 (775) 304-19-99',
+  heroImage: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&q=80&w=1000',
+  pricing: [
+    { id: '1', name: 'Первичная консультация с планом лечения', price: 'от 5 000 ₸' },
+    { id: '2', name: 'Лечение кариеса (анестезия + пломба)', price: 'от 15 000 ₸' },
+    { id: '3', name: 'Профессиональная гигиена полости рта', price: 'от 18 000 ₸' },
+    { id: '4', name: 'Имплантация зубов (имплант + работа)', price: 'от 120 000 ₸' },
+    { id: '5', name: 'Профессиональное отбеливание зубов', price: 'от 45 000 ₸' },
+  ],
+  doctors: [
+    { id: '1', name: 'Арман Оспанов', role: 'Главный врач, имплантолог', exp: '15 лет', img: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=400', desc: 'Провел более 3000 успешных операций по имплантации.' },
+    { id: '2', name: 'Динара Алиева', role: 'Стоматолог-терапевт, эндодонтист', exp: '12 лет', img: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80&w=400', desc: 'Специалист по ювелирной работе с каналами под микроскопом.' },
+    { id: '3', name: 'Тимур Саидов', role: 'Детский стоматолог', exp: '8 лет', img: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=400', desc: 'Тонкий психолог, находит подход к самым пугливым малышам.' },
+  ]
+};
+
+export function useSiteData() {
+  const [data, setData] = useState<SiteData>(() => {
+    const saved = localStorage.getItem('assem_dental_data');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return defaultData;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('assem_dental_data', JSON.stringify(data));
+  }, [data]);
+
+  return [data, setData] as const;
+}
