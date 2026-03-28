@@ -16,16 +16,23 @@ async function startServer() {
   });
 
   // Vite middleware for development
-  if (process.env.NODE_ENV !== "production") {
+  const isProd = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+  
+  if (!isProd) {
+    console.log("Starting in DEVELOPMENT mode with Vite middleware");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
   } else {
+    console.log("Starting in PRODUCTION mode serving static files");
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
+    
+    // SPA Fallback: serve index.html for all other routes
     app.get('*', (req, res) => {
+      console.log(`SPA Fallback for: ${req.url}`);
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
